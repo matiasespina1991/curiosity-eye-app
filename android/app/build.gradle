@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -26,6 +29,11 @@ android {
     namespace "com.matiasespina1991.curiosity.eye.app"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+
+    aaptOptions {
+        noCompress 'tflite'
+        noCompress 'lite'
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

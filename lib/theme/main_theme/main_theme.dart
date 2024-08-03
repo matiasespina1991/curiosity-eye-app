@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:template_app/app_settings/theme_settings.dart';
-import 'package:template_app/theme/main_theme/chip_theme.dart';
-import 'package:template_app/theme/main_theme/input_theme.dart';
+import 'package:curiosity_eye_app/app_settings/theme_settings.dart';
+import 'package:curiosity_eye_app/theme/main_theme/chip_theme.dart';
+import 'package:curiosity_eye_app/theme/main_theme/input_theme.dart';
 
 import '../../models/theme_models.dart';
 import 'buttons_theme.dart';

@@ -11,6 +11,9 @@
 migrate_working_dir/
 _combined.txt
 
+# environment file
+.env
+
 #podfiles
 **/ios/Pods/
 **/ios/Podfile.lock

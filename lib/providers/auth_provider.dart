@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:template_app/app_settings/app_general_settings.dart';
-import 'package:template_app/app_settings/auth_config.dart';
+import 'package:curiosity_eye_app/app_settings/app_general_settings.dart';
+import 'package:curiosity_eye_app/app_settings/auth_config.dart';
 
 class AuthorizationProvider extends ChangeNotifier {
   final FlutterSecureStorage storage = const FlutterSecureStorage();

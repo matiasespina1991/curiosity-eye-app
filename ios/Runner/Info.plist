@@ -35,6 +35,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSCameraUsageDescription</key>
+    <string>This app needs to use the camera in order to offer its function for object recognition.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This app needs to use the camera in order to offer speech and voice recognition funcitons.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

@@ -8,8 +8,6 @@ import '../screens/common/login_screen/login_screen.dart';
 import '../screens/common/not_found_screen/not_found_screen.dart';
 
 class Routes {
-  /// COMMON ROUTES
-
   static RouteConfig loginScreen = RouteConfig(
     path: '/login',
     name: 'Login Screen',

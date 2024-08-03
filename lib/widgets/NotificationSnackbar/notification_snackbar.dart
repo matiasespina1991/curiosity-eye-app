@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:template_app/app_settings/theme_settings.dart';
+import 'package:curiosity_eye_app/app_settings/theme_settings.dart';
 
 import '../../globals.dart';
 

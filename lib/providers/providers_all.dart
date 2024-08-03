@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_app/providers/auth_provider.dart';
-import 'package:template_app/providers/locale_provider.dart';
-import 'package:template_app/providers/theme_provider.dart';
+import 'package:curiosity_eye_app/providers/auth_provider.dart';
+import 'package:curiosity_eye_app/providers/locale_provider.dart';
+import 'package:curiosity_eye_app/providers/theme_provider.dart';
 
 import '../services/connectivity_service.dart';
 

@@ -16,7 +16,7 @@ class DebugConfig {
       null; // The ID you set in Firebase for the database you will be using for debugging - If Null, main database will be used.
   static const bool showDebugPrints = false;
   static const bool bypassLoginScreen =
-      false; // If true, login screen will be skipped
+      true; // If true, login screen will be skipped
   static RouteConfig debugScreen = Routes.notFoundScreen;
   static const forceDebugScreen =
       false; // If true, the route set in debugScreen will be shown and screen protection will be ignored
