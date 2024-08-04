@@ -70,12 +70,17 @@ class MainTheme {
       textTheme:
           _buildTextTheme(base.textTheme, ThemeSettings.primaryTextStyle),
       appBarTheme: AppBarTheme(
-        foregroundColor: colorScheme.onPrimary,
+        foregroundColor: (brightness == Brightness.light
+            ? ThemeSettings.appbarOnBackgroundColor.lightModePrimary
+            : ThemeSettings.appbarOnBackgroundColor.darkModePrimary),
         titleTextStyle: ThemeSettings.appBarTextStyle.isGoogleFont
             ? GoogleFonts.getFont(ThemeSettings.appBarTextStyle.name,
                 textStyle: TextStyle(
                     fontSize: ThemeSettings.appBarTitleFontSize,
-                    color: colorScheme.onPrimary))
+                    color: (brightness == Brightness.light
+                        ? ThemeSettings.appbarOnBackgroundColor.lightModePrimary
+                        : ThemeSettings
+                            .appbarOnBackgroundColor.darkModePrimary)))
             : TextStyle(
                 fontFamily: ThemeSettings.appBarTextStyle.name,
                 fontSize: ThemeSettings.appBarTitleFontSize,

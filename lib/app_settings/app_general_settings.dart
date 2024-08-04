@@ -1,8 +1,8 @@
 import '../routes/routes.dart';
 
 class AppGeneralSettings {
-  static const bool useTopAppBar = false;
-  static const bool useFloatingSpeedDialMenu = true;
+  static const bool useTopAppBar = true;
+  static const bool useFloatingSpeedDialMenu = false;
   static const bool useAppDrawerMenu = false;
   static const String minimumiOSVersion =
       '13.0'; // Set this manually in Xcode & Podfile

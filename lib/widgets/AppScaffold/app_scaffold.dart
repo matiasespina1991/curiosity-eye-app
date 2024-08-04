@@ -43,7 +43,7 @@ class AppScaffold extends ConsumerStatefulWidget {
     this.scrollPhysics,
     this.backgroundAnimation,
     this.backgroundAnimationDarkMode,
-    this.useTopAppBar = false,
+    this.useTopAppBar = true,
     this.showScreenTitleInAppBar = true,
     this.centerTitle,
   });
@@ -95,13 +95,23 @@ class AppScaffoldState extends ConsumerState<AppScaffold> {
       bottom: widget.useSafeArea ?? ThemeSettings.useSafeArea,
       top: widget.useSafeArea ?? ThemeSettings.useSafeArea,
       child: Scaffold(
-        appBar: (AppGeneralSettings.useTopAppBar || widget.useTopAppBar)
+        appBar: widget.useTopAppBar
             ? ThemeAppBar(
+                actions: [],
                 appBarHeight: ThemeSettings.appBarHeight,
                 centerTitle: widget.centerTitle,
                 title: widget.showScreenTitleInAppBar ? widget.appBarTitle : '',
               )
-            : null,
+            : (!widget.useTopAppBar && AppGeneralSettings.useTopAppBar)
+                ? null
+                : ThemeAppBar(
+                    actions: [],
+                    appBarHeight: ThemeSettings.appBarHeight,
+                    centerTitle: widget.centerTitle,
+                    title: widget.showScreenTitleInAppBar
+                        ? widget.appBarTitle
+                        : '',
+                  ),
         body: Stack(
           fit: StackFit.expand,
           children: [

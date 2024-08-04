@@ -3,10 +3,12 @@ import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tflite_v2/tflite_v2.dart';
 
+import '../../../widgets/AppScaffold/app_scaffold.dart';
+
 class ObjectDetectionScreen extends ConsumerStatefulWidget {
   final List<CameraDescription> cameras;
 
-  ObjectDetectionScreen({super.key, required this.cameras});
+  const ObjectDetectionScreen({super.key, required this.cameras});
 
   @override
   _ObjectDetectionScreenState createState() => _ObjectDetectionScreenState();
@@ -133,10 +135,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
     if (!_controller.value.isInitialized) {
       return Container();
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Real-time Object Detection'),
-      ),
+    return AppScaffold(
       body: Column(
         children: [
           Stack(
@@ -145,8 +144,10 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.8,
                 child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    CameraPreview(_controller),
+                    Center(
+                        child: CameraPreview(_controller, child: Container())),
                     if (recognitions != null)
                       BoundingBoxes(
                         recognitions: recognitions!,
@@ -176,6 +177,10 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
           )
         ],
       ),
+      appBarTitle: 'Real-time object detection',
+      isProtected: true,
+      showScreenTitleInAppBar: false,
+      scrollPhysics: NeverScrollableScrollPhysics(),
     );
   }
 }
@@ -204,6 +209,8 @@ class BoundingBoxes extends StatelessWidget {
         double w = rec["rect"]["w"] * screenW;
         double h = rec["rect"]["h"] * screenH;
 
+        if (w < 60) return Container();
+
         return Positioned(
           left: x,
           top: y,
@@ -216,13 +223,20 @@ class BoundingBoxes extends StatelessWidget {
                 width: 2,
               ),
             ),
-            child: Text(
-              "${rec["detectedClass"]}",
-              style: TextStyle(
-                color: Colors.lightGreen,
-                fontSize: 15,
-                background: Paint()..color = Colors.black,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FittedBox(
+                  child: Text(
+                    "${rec["detectedClass"]}",
+                    style: TextStyle(
+                      color: Colors.lightGreen,
+                      fontSize: 17,
+                      background: Paint()..color = Colors.transparent,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );

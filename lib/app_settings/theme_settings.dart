@@ -8,12 +8,12 @@ class ThemeSettings {
   static const bool useMaterial3 = true;
   static const bool useSafeArea = true;
   static const EdgeInsetsGeometry scaffoldPadding = EdgeInsets.only(
-    top: 30,
+    top: 0,
     bottom: 0,
-    left: 20,
-    right: 20,
+    left: 0,
+    right: 0,
   );
-  static double appBarHeight = 50;
+  static double appBarHeight = 60;
   static const Color seedColor = Colors.blueGrey;
   static const bool forceSeedColor = false;
   static const String defaultScrollPhysics =
@@ -69,7 +69,7 @@ class ThemeSettings {
 
   static const ThemeColors appBarBackgroundColor = ThemeColors(
     lightModePrimary: Colors.blueGrey,
-    darkModePrimary: Colors.blueGrey,
+    darkModePrimary: Color(0xFF121212),
   );
 
   static const ThemeColors primaryTextColor = ThemeColors(
@@ -165,7 +165,7 @@ class ThemeSettings {
   );
 
   static const FontConfig tertiaryTextStyle = FontConfig(
-    name: 'Lato',
+    name: 'Pacifico',
     isGoogleFont: true,
   );
 
@@ -174,7 +174,7 @@ class ThemeSettings {
     isGoogleFont: true,
   );
 
-  static const double appBarTitleFontSize = 20;
+  static const double appBarTitleFontSize = 16;
   static const double bodyLargeFontSize = 16;
   static const double bodyMediumFontSize = 13;
   static const double bodySmallFontSize = 12;

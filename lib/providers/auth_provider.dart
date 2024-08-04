@@ -41,7 +41,7 @@ class AuthorizationProvider extends ChangeNotifier {
       }
     }
 
-    if ((DebugConfig.bypassLoginScreen || DebugConfig.forceDebugScreen) &&
+    if ((!DebugConfig.bypassLoginScreen || DebugConfig.forceDebugScreen) &&
         (_authToken == null && _user == null)) {
       debugPrint('Signing user automatically...');
       GoogleSignInAccount? currentUser = await _googleSignIn.signIn();
