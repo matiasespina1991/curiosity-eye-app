@@ -25,6 +25,8 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   int imageHeight = 0;
   int imageWidth = 0;
   Timer? _timer;
+  bool _isProcessing =
+      false; // Estado para indicar si el intérprete está ocupado
 
   @override
   void initState() {
@@ -103,7 +105,8 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
       return;
     }
     _controller.startImageStream((CameraImage image) {
-      if (isModelLoaded) {
+      if (isModelLoaded && !_isProcessing) {
+        // Verifica si el modelo está cargado y no está ocupado
         runModel(image);
       }
     });
@@ -114,6 +117,10 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
     if (image.planes.isEmpty) return;
 
     try {
+      setState(() {
+        _isProcessing = true; // Marca el intérprete como ocupado
+      });
+
       List<dynamic>? _recognitions = await Tflite.detectObjectOnFrame(
         bytesList: image.planes.map((plane) => plane.bytes).toList(),
         model: 'SSDMobileNet',
@@ -134,17 +141,33 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
         recognitions = listOfRecognizedObjects;
         imageHeight = image.height;
         imageWidth = image.width;
+        _isProcessing = false; // Marca el intérprete como disponible
       });
     } catch (e) {
+      setState(() {
+        _isProcessing =
+            false; // Marca el intérprete como disponible incluso en caso de error
+      });
       print('Error: $e');
     }
   }
 
   void startRecognitionTimer() {
+    debugPrint('///////');
+    debugPrint('///////');
+    print('Starting recognition timer');
+    debugPrint('///////');
+    debugPrint('///////');
     _timer = Timer.periodic(const Duration(seconds: 7), (timer) async {
       if (recognitions != null && recognitions!.isNotEmpty) {
         RecognizedObject mostConfidentObject =
             recognitions!.reduce((a, b) => a.confidence > b.confidence ? a : b);
+
+        debugPrint('///////');
+        debugPrint('///////');
+        log('Most confident object: ${mostConfidentObject.detectedClass}');
+        debugPrint('///////');
+        debugPrint('///////');
         String fact =
             await getFactAboutObject(mostConfidentObject.detectedClass);
         debugPrint('///////');
@@ -191,10 +214,10 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
                   ],
                 ),
               ),
-              // Positioned(
-              //   child: Text(
-              //       'This is a curiosity about the object detected in the camera'),
-              // ),
+              Positioned(
+                child: Text(
+                    'This is a curiosity about the object detected in the camera'),
+              ),
             ],
           ),
           SizedBox(height: 5),

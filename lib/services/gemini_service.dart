@@ -6,7 +6,7 @@ import '../services/error_reporting_service.dart';
 
 class GeminiService {
   final model = FirebaseVertexAI.instance.generativeModel(
-    model: 'gemini-1.5-pro-001',
+    model: 'gemini-1.5-flash',
   );
 
   Future<String?> getResponse(String inputText) async {
