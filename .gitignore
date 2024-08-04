@@ -14,6 +14,7 @@ _combined.txt
 # environment file
 .env
 
+
 #podfiles
 **/ios/Pods/
 **/ios/Podfile.lock

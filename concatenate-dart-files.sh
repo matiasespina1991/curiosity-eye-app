@@ -9,6 +9,8 @@ files=(
 #    "lib/app_settings/language_settings.dart"
 #    "lib/app_settings/theme_settings.dart"
     "lib/screens/common/home_screen/home_screen.dart"
+    "lib/screens/common/object_detection_screen/object_detection_screen.dart"
+    "lib/services/gemini_service.dart"
 #    "lib/screens/common/camera_screen/camera_screen_tflite.dart"
 #    "lib/utils/ml_utils/tflite_helper.dart"
 #    "lib/screens/login_screen/login_screen.dart"

@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDzxN7c9PvfK7nKoJCfczx3lT-IFxDPGmo',
-    appId: '1:309333684423:android:a5ea29edd0845b5ec80ee2',
+    appId: '1:309333684423:android:3bd6212b1af586f6c80ee2',
     messagingSenderId: '309333684423',
     projectId: 'curiosity-eye-app',
     storageBucket: 'curiosity-eye-app.appspot.com',
@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'curiosity-eye-app.appspot.com',
     iosBundleId: 'com.matiasespina1991.curiosity.eye.app',
   );
+
 }

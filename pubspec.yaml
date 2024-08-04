@@ -30,6 +30,9 @@ dependencies:
   sign_in_button: ^3.2.0
   # Go Router is a Flutter plugin for routing in a Flutter app.
   go_router: ^14.2.0
+  # Vertex AI is a Flutter plugin for using Vertex AI in a Flutter app.
+  firebase_vertexai: ^0.2.2+2
+
 
 
 
@@ -162,6 +165,7 @@ dependencies:
   google_ml_vision: ^0.0.8
   image: ^4.2.0
   tflite_v2: ^1.0.0
+  flutter_svg: ^2.0.10+1
 
 
 dev_dependencies:
@@ -198,6 +202,7 @@ flutter:
     - lib/assets/lottie_animations/
     - lib/assets/images/
     - lib/assets/ml_models/ssd_mobilenet_v2/
+
 
 
 

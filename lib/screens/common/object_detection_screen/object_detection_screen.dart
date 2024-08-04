@@ -204,18 +204,18 @@ class BoundingBoxes extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: recognitions.map((rec) {
-        var x = rec["rect"]["x"] * screenW;
-        var y = rec["rect"]["y"] * screenH;
-        double w = rec["rect"]["w"] * screenW;
-        double h = rec["rect"]["h"] * screenH;
+        var xPosition = rec["rect"]["x"] * screenW;
+        var yPosition = rec["rect"]["y"] * screenH;
+        double width = rec["rect"]["w"] * screenW;
+        double height = rec["rect"]["h"] * screenH;
 
-        if (w < 60) return Container();
+        if (width < 60) return Container();
 
         return Positioned(
-          left: x,
-          top: y,
-          width: w,
-          height: h,
+          left: xPosition,
+          top: yPosition,
+          width: width,
+          height: height,
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(

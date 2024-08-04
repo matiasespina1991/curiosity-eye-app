@@ -1,10 +1,13 @@
 import 'package:camera/camera.dart';
 import 'package:curiosity_eye_app/app_settings/theme_settings.dart';
+import 'package:firebase_vertexai/firebase_vertexai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../services/gemini_service.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 import '../object_detection_screen/object_detection_screen.dart';
 
@@ -24,6 +27,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> loadData() async {
+    String? response = await GeminiService().getResponse('Hello');
+
+    debugPrint('Response: $response');
     cameras = await availableCameras();
     setState(() {
       isLoading = false;
@@ -70,7 +76,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 );
               },
-              label: Text('Open Camera',
+              label: Text('Explore environment',
                   style: TextStyle(
                     fontSize: 15,
                   )),
