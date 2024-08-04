@@ -10,19 +10,15 @@ class GeminiService {
   );
 
   Future<String?> getResponse(String inputText) async {
-    const prompt = '''
-Say hi.
-    ''';
-
     try {
       final GenerateContentResponse response =
-          await model.generateContent([Content.text(prompt)]);
+          await model.generateContent([Content.text(inputText)]);
 
       return response.text;
     } catch (e, stackTrace) {
       await ErrorReportingService.reportError(e, stackTrace, null,
           screen: 'GeminiService',
-          errorLocation: 'getTherapyTags',
+          errorLocation: 'getResponse',
           additionalInfo: [
             'User input text: $inputText',
           ]);

@@ -1,11 +1,12 @@
+import 'dart:async'; // Importa la biblioteca para el temporizador
 import 'dart:developer';
-
 import 'package:curiosity_eye_app/models/recognized_object_model.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tflite_v2/tflite_v2.dart';
 
+import '../../../services/gemini_service.dart'; // Importa el servicio Gemini
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 
 class ObjectDetectionScreen extends ConsumerStatefulWidget {
@@ -23,17 +24,20 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   List<RecognizedObject>? recognitions;
   int imageHeight = 0;
   int imageWidth = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     loadModel();
     initializeCamera(null);
+    startRecognitionTimer();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -49,7 +53,6 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
       } else {
         print('///Error loading model: $res///');
       }
-      ;
       setState(() {
         isModelLoaded = res != null;
       });
@@ -59,7 +62,6 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
       });
       print('Error loading model: $e');
     }
-    ;
   }
 
   void toggleCamera() {
@@ -138,6 +140,28 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
     }
   }
 
+  void startRecognitionTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 7), (timer) async {
+      if (recognitions != null && recognitions!.isNotEmpty) {
+        RecognizedObject mostConfidentObject =
+            recognitions!.reduce((a, b) => a.confidence > b.confidence ? a : b);
+        String fact =
+            await getFactAboutObject(mostConfidentObject.detectedClass);
+        debugPrint('///////');
+        debugPrint('///////');
+        log('Fact about ${mostConfidentObject.detectedClass}: $fact');
+        debugPrint('///////');
+        debugPrint('///////');
+      }
+    });
+  }
+
+  Future<String> getFactAboutObject(String detectedClass) async {
+    String prompt =
+        "Give me a brief historical or curious fact about $detectedClass.";
+    return await GeminiService().getResponse(prompt) ?? "No fact available.";
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_controller.value.isInitialized) {
@@ -167,12 +191,22 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
                   ],
                 ),
               ),
+              // Positioned(
+              //   child: Text(
+              //       'This is a curiosity about the object detected in the camera'),
+              // ),
             ],
           ),
+          SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
+                style: ButtonStyle(
+                  backgroundColor:
+                      WidgetStateProperty.all(Colors.white.withOpacity(0.07)),
+                  shape: WidgetStateProperty.all(const CircleBorder()),
+                ),
                 onPressed: () {
                   toggleCamera();
                 },
