@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:curiosity_eye_app/models/recognized_object_model.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +20,7 @@ class ObjectDetectionScreen extends ConsumerStatefulWidget {
 class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   late CameraController _controller;
   bool isModelLoaded = false;
-  List<dynamic>? recognitions;
+  List<RecognizedObject>? recognitions;
   int imageHeight = 0;
   int imageWidth = 0;
 
@@ -109,7 +112,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
     if (image.planes.isEmpty) return;
 
     try {
-      var recognitions = await Tflite.detectObjectOnFrame(
+      List<dynamic>? _recognitions = await Tflite.detectObjectOnFrame(
         bytesList: image.planes.map((plane) => plane.bytes).toList(),
         model: 'SSDMobileNet',
         imageHeight: image.height,
@@ -120,8 +123,13 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
         threshold: 0.4,
       );
 
+      List<RecognizedObject>? listOfRecognizedObjects =
+          _recognitions?.map<RecognizedObject>((rec) {
+        return RecognizedObject.fromMap(rec);
+      }).toList();
+
       setState(() {
-        this.recognitions = recognitions;
+        recognitions = listOfRecognizedObjects;
         imageHeight = image.height;
         imageWidth = image.width;
       });
@@ -168,8 +176,8 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
                 onPressed: () {
                   toggleCamera();
                 },
-                icon: Icon(
-                  Icons.camera_front,
+                icon: const Icon(
+                  Icons.cameraswitch_outlined,
                   size: 30,
                 ),
               )
@@ -186,7 +194,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
 }
 
 class BoundingBoxes extends StatelessWidget {
-  final List<dynamic> recognitions;
+  final List<RecognizedObject> recognitions;
   final double previewH;
   final double previewW;
   final double screenH;
@@ -204,10 +212,10 @@ class BoundingBoxes extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: recognitions.map((rec) {
-        var xPosition = rec["rect"]["x"] * screenW;
-        var yPosition = rec["rect"]["y"] * screenH;
-        double width = rec["rect"]["w"] * screenW;
-        double height = rec["rect"]["h"] * screenH;
+        var xPosition = rec.x * screenW;
+        var yPosition = rec.y * screenH;
+        double width = rec.width * screenW;
+        double height = rec.height * screenH;
 
         if (width < 60) return Container();
 
@@ -228,7 +236,7 @@ class BoundingBoxes extends StatelessWidget {
               children: [
                 FittedBox(
                   child: Text(
-                    "${rec["detectedClass"]}",
+                    rec.detectedClass,
                     style: TextStyle(
                       color: Colors.lightGreen,
                       fontSize: 17,
