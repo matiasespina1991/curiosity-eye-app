@@ -1,12 +1,11 @@
-import 'dart:async'; // Importa la biblioteca para el temporizador
-import 'dart:developer';
+import 'dart:async';
 import 'package:curiosity_eye_app/models/recognized_object_model.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tflite_v2/tflite_v2.dart';
 
-import '../../../services/gemini_service.dart'; // Importa el servicio Gemini
+import '../../../services/gemini_service.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 
 class ObjectDetectionScreen extends ConsumerStatefulWidget {
@@ -143,8 +142,21 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
       if (curiousFact.isEmpty) {
         RecognizedObject? mostConfidentObject = listOfRecognizedObjects
             ?.reduce((a, b) => a.confidence > b.confidence ? a : b);
-        curiousFact =
-            await getFactAboutObject(mostConfidentObject!.detectedClass) ?? '';
+
+        if (mostConfidentObject != null) {
+          curiousFact =
+              await getFactAboutObject(mostConfidentObject!.detectedClass) ??
+                  '';
+
+          setState(() {
+            alreadyGivenFacts
+                .add('<<${mostConfidentObject.detectedClass}: $curiousFact>>');
+          });
+
+          setState(() {
+            curiousFact = curiousFact;
+          });
+        }
       }
 
       setState(() {
@@ -162,7 +174,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   }
 
   void startRecognitionTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 15), (timer) async {
+    _timer = Timer.periodic(const Duration(seconds: 7), (timer) async {
       getFact();
     });
   }
@@ -172,9 +184,8 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
       RecognizedObject mostConfidentObject =
           recognitions!.reduce((a, b) => a.confidence > b.confidence ? a : b);
 
-      // Guard clause to prevent multiple calls within 10 seconds
       if (_lastFactRequestTime != null &&
-          DateTime.now().difference(_lastFactRequestTime!).inSeconds < 10) {
+          DateTime.now().difference(_lastFactRequestTime!).inSeconds < 7) {
         return;
       }
 
@@ -189,17 +200,12 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
         });
       }
 
-      //// pass letter by letter
       for (int i = 0; i < fact.length; i++) {
         await Future.delayed(const Duration(milliseconds: 1));
         setState(() {
           curiousFact = fact.substring(0, i + 1);
         });
       }
-
-      // setState(() {
-      //   curiousFact = fact;
-      // });
     }
   }
 
