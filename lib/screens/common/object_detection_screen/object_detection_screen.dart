@@ -25,8 +25,8 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   int imageHeight = 0;
   int imageWidth = 0;
   Timer? _timer;
-  bool _isProcessing =
-      false; // Estado para indicar si el intérprete está ocupado
+  String curiousFact = '';
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -106,7 +106,6 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
     }
     _controller.startImageStream((CameraImage image) {
       if (isModelLoaded && !_isProcessing) {
-        // Verifica si el modelo está cargado y no está ocupado
         runModel(image);
       }
     });
@@ -118,7 +117,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
 
     try {
       setState(() {
-        _isProcessing = true; // Marca el intérprete como ocupado
+        _isProcessing = true;
       });
 
       List<dynamic>? _recognitions = await Tflite.detectObjectOnFrame(
@@ -141,40 +140,28 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
         recognitions = listOfRecognizedObjects;
         imageHeight = image.height;
         imageWidth = image.width;
-        _isProcessing = false; // Marca el intérprete como disponible
+        _isProcessing = false;
       });
     } catch (e) {
       setState(() {
-        _isProcessing =
-            false; // Marca el intérprete como disponible incluso en caso de error
+        _isProcessing = false;
       });
       print('Error: $e');
     }
   }
 
   void startRecognitionTimer() {
-    debugPrint('///////');
-    debugPrint('///////');
-    print('Starting recognition timer');
-    debugPrint('///////');
-    debugPrint('///////');
-    _timer = Timer.periodic(const Duration(seconds: 7), (timer) async {
+    _timer = Timer.periodic(const Duration(seconds: 15), (timer) async {
       if (recognitions != null && recognitions!.isNotEmpty) {
         RecognizedObject mostConfidentObject =
             recognitions!.reduce((a, b) => a.confidence > b.confidence ? a : b);
 
-        debugPrint('///////');
-        debugPrint('///////');
-        log('Most confident object: ${mostConfidentObject.detectedClass}');
-        debugPrint('///////');
-        debugPrint('///////');
         String fact =
             await getFactAboutObject(mostConfidentObject.detectedClass);
-        debugPrint('///////');
-        debugPrint('///////');
-        log('Fact about ${mostConfidentObject.detectedClass}: $fact');
-        debugPrint('///////');
-        debugPrint('///////');
+
+        setState(() {
+          curiousFact = fact;
+        });
       }
     });
   }
@@ -182,7 +169,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   Future<String> getFactAboutObject(String detectedClass) async {
     String prompt =
         "Give me a brief historical or curious fact about $detectedClass.";
-    return await GeminiService().getResponse(prompt) ?? "No fact available.";
+    return await GeminiService().getResponse(prompt) ?? "";
   }
 
   @override
@@ -195,7 +182,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
         children: [
           Stack(
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.8,
                 child: Stack(
@@ -215,12 +202,28 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
                 ),
               ),
               Positioned(
-                child: Text(
-                    'This is a curiosity about the object detected in the camera'),
+                bottom: 30,
+                right: 7,
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: Text(
+                      curiousFact,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        color: Colors.green,
+                        backgroundColor: Colors.black54,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -245,7 +248,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
       appBarTitle: 'Real-time object detection',
       isProtected: true,
       showScreenTitleInAppBar: false,
-      scrollPhysics: NeverScrollableScrollPhysics(),
+      scrollPhysics: const NeverScrollableScrollPhysics(),
     );
   }
 }
@@ -257,7 +260,8 @@ class BoundingBoxes extends StatelessWidget {
   final double screenH;
   final double screenW;
 
-  BoundingBoxes({
+  const BoundingBoxes({
+    super.key,
     required this.recognitions,
     required this.previewH,
     required this.previewW,
@@ -280,7 +284,7 @@ class BoundingBoxes extends StatelessWidget {
           left: xPosition,
           top: yPosition,
           width: width,
-          height: height,
+          height: height + 11,
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
