@@ -27,6 +27,8 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   Timer? _timer;
   String curiousFact = '';
   bool _isProcessing = false;
+  List<String> alreadyGivenFacts = [];
+  DateTime? _lastFactRequestTime;
 
   @override
   void initState() {
@@ -110,6 +112,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
       }
     });
     setState(() {});
+    getFact(); // Llamada inmediata para obtener la primera curiosidad
   }
 
   void runModel(CameraImage image) async {
@@ -136,6 +139,14 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
         return RecognizedObject.fromMap(rec);
       }).toList();
 
+      /// Get a first fast fact about the most confident object
+      if (curiousFact.isEmpty) {
+        RecognizedObject? mostConfidentObject = listOfRecognizedObjects
+            ?.reduce((a, b) => a.confidence > b.confidence ? a : b);
+        curiousFact =
+            await getFactAboutObject(mostConfidentObject!.detectedClass) ?? '';
+      }
+
       setState(() {
         recognitions = listOfRecognizedObjects;
         imageHeight = image.height;
@@ -152,23 +163,50 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
 
   void startRecognitionTimer() {
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) async {
-      if (recognitions != null && recognitions!.isNotEmpty) {
-        RecognizedObject mostConfidentObject =
-            recognitions!.reduce((a, b) => a.confidence > b.confidence ? a : b);
+      getFact();
+    });
+  }
 
-        String fact =
-            await getFactAboutObject(mostConfidentObject.detectedClass);
+  void getFact() async {
+    if (recognitions != null && recognitions!.isNotEmpty) {
+      RecognizedObject mostConfidentObject =
+          recognitions!.reduce((a, b) => a.confidence > b.confidence ? a : b);
 
+      // Guard clause to prevent multiple calls within 10 seconds
+      if (_lastFactRequestTime != null &&
+          DateTime.now().difference(_lastFactRequestTime!).inSeconds < 10) {
+        return;
+      }
+
+      _lastFactRequestTime = DateTime.now();
+
+      String fact = await getFactAboutObject(mostConfidentObject.detectedClass);
+
+      if (fact.isNotEmpty) {
         setState(() {
-          curiousFact = fact;
+          alreadyGivenFacts
+              .add('<<${mostConfidentObject.detectedClass}: $fact>>');
         });
       }
-    });
+
+      //// pass letter by letter
+      for (int i = 0; i < fact.length; i++) {
+        await Future.delayed(const Duration(milliseconds: 1));
+        setState(() {
+          curiousFact = fact.substring(0, i + 1);
+        });
+      }
+
+      // setState(() {
+      //   curiousFact = fact;
+      // });
+    }
   }
 
   Future<String> getFactAboutObject(String detectedClass) async {
     String prompt =
-        "Give me a brief historical or curious fact about $detectedClass.";
+        "Give me a brief historical or curious fact about the following type of object: $detectedClass. If the object is 'Person' then give a curious fact about humans. Make the fact as interesting as possible. and make it around or less than 50 words.  Don't use any special characters. ${alreadyGivenFacts.isNotEmpty ? 'You have to avoid giving the same fact twice. You already gave the following facts: ${alreadyGivenFacts.join(', ')}' : ''}. The fact must be about the following concept/object: $detectedClass.";
+
     return await GeminiService().getResponse(prompt) ?? "";
   }
 
@@ -211,7 +249,7 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
                     child: Text(
                       curiousFact,
                       textAlign: TextAlign.right,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.green,
                         backgroundColor: Colors.black54,
                         fontSize: 16,
@@ -284,7 +322,7 @@ class BoundingBoxes extends StatelessWidget {
           left: xPosition,
           top: yPosition,
           width: width,
-          height: height + 11,
+          height: height + 13,
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(

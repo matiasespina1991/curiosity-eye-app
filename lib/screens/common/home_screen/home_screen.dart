@@ -44,6 +44,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: CircularProgressIndicator(),
         ),
         appBarTitle: 'Home Screen',
+        showScreenTitleInAppBar: false,
         isProtected: true,
         scrollPhysics: NeverScrollableScrollPhysics(),
       );
