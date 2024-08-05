@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/general_models.dart';
 import '../models/theme_models.dart';
 
@@ -148,6 +149,8 @@ class ThemeSettings {
   static const Color snackBarSuccessTextColor = Colors.white;
   static const Color snackBarInfoBackgroundColor = Colors.black;
   static const Color snackBarInfoTextColor = Colors.white;
+
+  static String? mainFontFamily = GoogleFonts.laBelleAurore().fontFamily;
 
   static const FontConfig appBarTextStyle = FontConfig(
     name: 'Roboto',

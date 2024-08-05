@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:curiosity_eye_app/app_settings/theme_settings.dart';
 import 'package:curiosity_eye_app/models/recognized_object_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:tflite_v2/tflite_v2.dart';
 
 import '../../../services/gemini_service.dart';
@@ -19,6 +22,7 @@ class ObjectDetectionScreen extends ConsumerStatefulWidget {
 
 class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   late CameraController _controller;
+
   bool isModelLoaded = false;
   List<RecognizedObject>? recognitions;
   int imageHeight = 0;
@@ -28,6 +32,8 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   bool _isProcessing = false;
   List<String> alreadyGivenFacts = [];
   DateTime? _lastFactRequestTime;
+  bool _showCursor = true;
+  Timer? _cursorTimer;
 
   @override
   void initState() {
@@ -35,6 +41,15 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
     loadModel();
     initializeCamera(null);
     startRecognitionTimer();
+    startCursorTimer();
+  }
+
+  void startCursorTimer() {
+    _cursorTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      setState(() {
+        _showCursor = !_showCursor;
+      });
+    });
   }
 
   @override
@@ -228,6 +243,8 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lensDirection = _controller.description.lensDirection;
+
     if (!_controller.value.isInitialized) {
       return Container();
     }
@@ -262,14 +279,30 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
                   padding: EdgeInsets.all(16.0),
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.6,
-                    child: Text(
-                      curiousFact,
+                    child: RichText(
                       textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        color: Colors.green,
-                        backgroundColor: Colors.black54,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.robotoMono().fontFamily,
+                          color: Colors.green,
+                          backgroundColor: Colors.black54,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        children: [
+                          TextSpan(
+                              text: curiousFact,
+                              style: TextStyle(
+                                letterSpacing: -0.2,
+                              )),
+                          TextSpan(
+                            text: _showCursor ? '_' : ' ',
+                            style: TextStyle(
+                              fontSize: 16,
+                              backgroundColor: Colors.black54,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -282,17 +315,20 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
+                padding: const EdgeInsets.all(10),
                 style: ButtonStyle(
                   backgroundColor:
-                      WidgetStateProperty.all(Colors.white.withOpacity(0.07)),
+                      WidgetStateProperty.all(Colors.white.withOpacity(0.05)),
                   shape: WidgetStateProperty.all(const CircleBorder()),
                 ),
                 onPressed: () {
                   toggleCamera();
                 },
-                icon: const Icon(
-                  Icons.cameraswitch_outlined,
-                  size: 30,
+                icon: Icon(
+                  lensDirection == CameraLensDirection.front
+                      ? CupertinoIcons.camera_rotate_fill
+                      : CupertinoIcons.camera_rotate,
+                  size: 25,
                 ),
               )
             ],
@@ -349,13 +385,17 @@ class BoundingBoxes extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FittedBox(
-                  child: Text(
-                    rec.detectedClass,
-                    style: TextStyle(
-                      color: Colors.lightGreen,
-                      fontSize: 17,
-                      background: Paint()..color = Colors.transparent,
+                Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: FittedBox(
+                    child: Text(
+                      rec.detectedClass,
+                      style: TextStyle(
+                        color: Colors.lightGreen,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        background: Paint()..color = Colors.transparent,
+                      ),
                     ),
                   ),
                 ),
