@@ -7,6 +7,7 @@ import 'package:camera/camera.dart';
 import 'package:curiosity_eye_app/providers/providers_all.dart';
 import 'package:curiosity_eye_app/routes/routes.dart';
 import 'app_settings/auth_config.dart';
+import 'firebase_options.dart';
 import 'globals.dart';
 import 'app_settings/app_info.dart';
 import 'app_settings/language_settings.dart';
@@ -19,7 +20,9 @@ List<CameraDescription> cameras = [];
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const ProviderScope(child: MyApp()));
 }
 

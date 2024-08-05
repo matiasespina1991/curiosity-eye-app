@@ -27,9 +27,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> loadData() async {
-    String? response = await GeminiService().getResponse('Hello');
+    String? response = await GeminiService().getResponse('Say: "I am ready!"');
 
-    debugPrint('Response: $response');
+    debugPrint('Gemini AI: $response');
     cameras = await availableCameras();
     setState(() {
       isLoading = false;
@@ -77,7 +77,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 );
               },
-              label: Text('Explore environment',
+              label: const Text('Explore environment',
                   style: TextStyle(
                     fontSize: 15,
                   )),

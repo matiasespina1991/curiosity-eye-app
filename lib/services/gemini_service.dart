@@ -11,6 +11,9 @@ class GeminiService {
 
   Future<String?> getResponse(String inputText) async {
     try {
+      debugPrint('///////////////////');
+      debugPrint('GEMINI REQUEST SENT');
+      debugPrint('///////////////////');
       final GenerateContentResponse response =
           await model.generateContent([Content.text(inputText)]);
 

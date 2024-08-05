@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -31,10 +32,10 @@ class ErrorReportingService {
       'deviceData': deviceData,
       'appInfo': appInfo,
       'stackTrace': stackTrace.toString(),
-      additionalInfo: additionalInfo,
+      'additionalInfo': additionalInfo,
     };
 
-    debugPrint("Error Report: $errorReport");
+    log("Error Report: $errorReport");
 
     // TODO: Send this data to your server or error tracking service.
   }

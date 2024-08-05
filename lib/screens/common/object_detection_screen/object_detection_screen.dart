@@ -147,6 +147,12 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
           curiousFact =
               await getFactAboutObject(mostConfidentObject!.detectedClass) ??
                   '';
+          debugPrint('////////////////');
+          debugPrint('////////////////');
+          debugPrint(
+              'first fact about "${mostConfidentObject.detectedClass}":: $curiousFact');
+          debugPrint('////////////////');
+          debugPrint('////////////////');
 
           setState(() {
             alreadyGivenFacts
@@ -194,6 +200,10 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
       String fact = await getFactAboutObject(mostConfidentObject.detectedClass);
 
       if (fact.isNotEmpty) {
+        debugPrint('////////////////');
+        debugPrint(
+            'new fact about "${mostConfidentObject.detectedClass}": $fact');
+        debugPrint('////////////////');
         setState(() {
           alreadyGivenFacts
               .add('<<${mostConfidentObject.detectedClass}: $fact>>');
