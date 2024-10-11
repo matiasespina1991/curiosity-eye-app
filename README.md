@@ -184,3 +184,9 @@ Template Flutter project.
 - **Analytics:** Integrate analytics to track user behavior and app performance. [ ]
 - **Performance Monitoring:** Set up performance monitoring to keep track of app performance in production. [ ]
 - **User Feedback:** Collect and analyze user feedback to make informed improvements. [ ]
+
+
+### Known bugs:
+- **Bug 1:** Description of the bug. [ ]
+- **Bug 2:** 
+   > https://stackoverflow.com/questions/76262477/flutter-lexical-or-preprocessor-issue-xcode-tensorflowlitec-h-file-not-fou

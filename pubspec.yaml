@@ -137,13 +137,14 @@ dependencies:
 
 # ----------------- FIREBASE PACKAGES -----------------
 #  # Firebase Core is a Flutter plugin to use the Firebase platform services.
-  firebase_core: ^3.1.1
+  firebase_core: ^3.0.0
 #  # Flutter Auth is a Flutter plugin that enables Android and iOS authentication using passwords, phone numbers, and identity providers like Google, Facebook, and Twitter.
   firebase_auth: ^5.1.1
 #  # Cloud Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud Platform.
   cloud_firestore: ^5.1.0
 #  # Firebase Database is a Flutter plugin to use the Firebase Realtime Database API and allow storing and syncing data with a NoSQL cloud database.
 #  firebase_database: ^11.0.1
+
 #  # Firebase Storage is a Flutter plugin to use the Firebase Cloud Storage API and allow uploading, downloading, and deleting files in the cloud.
 #  firebase_storage: ^12.0.1
 #  # Firebase Messaging is a Flutter plugin to use the Firebase Cloud Messaging (FCM) API and allow sending push notifications to Android and iOS users.
@@ -162,7 +163,7 @@ dependencies:
   intl: any
   camera: ^0.11.0+1
   flutter_dotenv: ^5.1.0
-  google_ml_vision: ^0.0.8
+#  google_ml_vision: ^0.0.8
   image: ^4.2.0
   tflite_v2: ^1.0.0
   flutter_svg: ^2.0.10+1
