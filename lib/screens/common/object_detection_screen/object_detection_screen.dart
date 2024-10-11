@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tflite_v2/tflite_v2.dart';
-
+import 'package:tflite_flutter/tflite_flutter.dart';
 import '../../../services/gemini_service.dart';
 import '../../../widgets/AppScaffold/app_scaffold.dart';
 
@@ -33,7 +32,15 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   List<String> alreadyGivenFacts = [];
   DateTime? _lastFactRequestTime;
   bool _showCursor = true;
+  late Interpreter interpreter;
   Timer? _cursorTimer;
+  final int inputSize = 300;
+  final List<int> inputShape = [1, inputSize, inputSize, 3];
+
+  final List<int> outputShapes = [
+    [1, 1917, 4],
+    [1, 1917, 91]
+  ];
 
   @override
   void initState() {
@@ -55,30 +62,24 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
   @override
   void dispose() {
     _controller.dispose();
+    interpreter.close();
     _timer?.cancel();
     super.dispose();
   }
 
   Future<void> loadModel() async {
     try {
-      String? res = await Tflite.loadModel(
-        model: 'lib/assets/ml_models/ssd_mobilenet_v2/detect.tflite',
-        labels: 'lib/assets/ml_models/ssd_mobilenet_v2/labelmap.txt',
-      );
-
-      if (res == null) {
-        print('///Model loaded///');
-      } else {
-        print('///Error loading model: $res///');
-      }
+      interpreter = await Interpreter.fromAsset(
+          'lib/assets/ml_models/ssd_mobilenet_v2/detect.tflite');
+      print('///Model loaded///');
       setState(() {
-        isModelLoaded = res != null;
+        isModelLoaded = true;
       });
     } catch (e) {
+      print('Error loading model: $e');
       setState(() {
         isModelLoaded = false;
       });
-      print('Error loading model: $e');
     }
   }
 
@@ -137,48 +138,13 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
         _isProcessing = true;
       });
 
-      List<dynamic>? _recognitions = await Tflite.detectObjectOnFrame(
-        bytesList: image.planes.map((plane) => plane.bytes).toList(),
-        model: 'SSDMobileNet',
-        imageHeight: image.height,
-        imageWidth: image.width,
-        imageMean: 127.5,
-        imageStd: 127.5,
-        numResultsPerClass: 1,
-        threshold: 0.4,
-      );
+      var inputImage = TensorImage.fromBytes(image.planes[0].bytes, inputShape);
+      var output = List.filled(outputShape, 0).reshape([1, numOfClasses]);
 
-      List<RecognizedObject>? listOfRecognizedObjects =
-          _recognitions?.map<RecognizedObject>((rec) {
-        return RecognizedObject.fromMap(rec);
-      }).toList();
+      interpreter.run(inputImage.buffer, output);
 
-      /// Get a first fast fact about the most confident object
-      if (curiousFact.isEmpty) {
-        RecognizedObject? mostConfidentObject = listOfRecognizedObjects
-            ?.reduce((a, b) => a.confidence > b.confidence ? a : b);
-
-        if (mostConfidentObject != null) {
-          curiousFact =
-              await getFactAboutObject(mostConfidentObject!.detectedClass) ??
-                  '';
-          debugPrint('////////////////');
-          debugPrint('////////////////');
-          debugPrint(
-              'first fact about "${mostConfidentObject.detectedClass}":: $curiousFact');
-          debugPrint('////////////////');
-          debugPrint('////////////////');
-
-          setState(() {
-            alreadyGivenFacts
-                .add('<<${mostConfidentObject.detectedClass}: $curiousFact>>');
-          });
-
-          setState(() {
-            curiousFact = curiousFact;
-          });
-        }
-      }
+      // Convertir el output a objetos reconocidos
+      List<RecognizedObject>? listOfRecognizedObjects = processOutput(output);
 
       setState(() {
         recognitions = listOfRecognizedObjects;
@@ -192,6 +158,13 @@ class _ObjectDetectionScreenState extends ConsumerState<ObjectDetectionScreen> {
       });
       print('Error: $e');
     }
+  }
+
+  List<RecognizedObject> processOutput(List output) {
+    // Aquí deberás implementar la conversión de los datos de salida en objetos reconocidos.
+    return output.map((rec) {
+      return RecognizedObject.fromMap(rec);
+    }).toList();
   }
 
   void startRecognitionTimer() {
